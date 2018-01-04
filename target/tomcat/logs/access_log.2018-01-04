@@ -954,3 +954,4 @@
 0:0:0:0:0:0:0:1 - - [04/Jan/2018:22:14:12 +0200] "POST /stickers/insertBoard HTTP/1.1" 200 - http-bio-8080-exec-3 9
 0:0:0:0:0:0:0:1 - - [04/Jan/2018:22:14:12 +0200] "GET /stickers/loadBoards HTTP/1.1" 200 481 http-bio-8080-exec-3 5
 0:0:0:0:0:0:0:1 - - [04/Jan/2018:22:14:12 +0200] "GET /stickers/loadBoards HTTP/1.1" 200 481 http-bio-8080-exec-3 5
+0:0:0:0:0:0:0:1 - - [04/Jan/2018:22:24:15 +0200] "POST /stickers/deleteBoard HTTP/1.1" 500 4265 http-bio-8080-exec-1 1197

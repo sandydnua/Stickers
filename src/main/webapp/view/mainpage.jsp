@@ -251,20 +251,16 @@
                 $("#stickers").empty();
                 var stickers = new Array();
                 var allPermittedOperations = data["allPermittedOperations"];
-//                alert(allPermittedOperations);
                 if(allPermittedOperations.indexOf("read") !=-1) {
 
                     stickers[0] = data["stickers"];
                     if (allPermittedOperations.indexOf("update") !=-1 && allPermittedOperations.indexOf("delete") !=-1) {
-                        alert("del up");
                         $('#stickersUpDelTmpl').tmpl(stickers).appendTo('#stickers');
                         // можно удалять и редактировать стикеры
                     } else if (allPermittedOperations.indexOf("update") !=-1 && allPermittedOperations.indexOf("delete") ==-1) {
-                        alert("up");
                         $('#stickersUpTmpl').tmpl(stickers).appendTo('#stickers');
                         // можно редактировать  и нельзя удалять
                     } else if (allPermittedOperations.indexOf("update") ==-1 && allPermittedOperations.indexOf("delete") !=-1) {
-                        alert("del");
                         $('#stickersDelTmpl').tmpl(stickers).appendTo('#stickers');
                         // нельзя редактировать, но можно удалять
                     }

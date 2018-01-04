@@ -1,10 +1,10 @@
 .idea/*
-.target/*
+.target/**
 *.class
 *.war
 *.jar
 *.ar
-sandy.iml
-SQLCmd.iml
-*/sql/*
-*/config/*
+*.iml
+Stickers.iml
+**/resources/sql/*
+**/config/*

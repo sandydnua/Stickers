@@ -1,1 +1,0 @@
-SELECT * FROM stickers.accaunts_in_groups;
