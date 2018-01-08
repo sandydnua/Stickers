@@ -51,4 +51,5 @@ public interface DatabaseManager {
     void updateQuery(String query);
 
     public List<String> executeQuery(String query);
+
 }

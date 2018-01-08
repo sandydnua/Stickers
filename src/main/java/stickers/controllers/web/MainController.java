@@ -107,7 +107,6 @@ public class MainController {
         } else {
             Accaunt accaunt = dbServices.createAccaunt(new Accaunt(email, password, firstname, lastname));
             model.addAttribute("idNewAccaunt", accaunt.getId());
-            //TODO тут надо отправить письмо со ссылкой для подтверждения аккаунта
             sendMailForConfirmAccaunt(accaunt.getId(), accaunt.getEmail());
             return "redirect:confirmPage";
         }

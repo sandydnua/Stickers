@@ -1,50 +1,30 @@
 package stickers.database.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "groups")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "name")
+    @NonNull
     private String name;
 
     @JoinColumn(name = "boards")
     @ManyToOne(fetch = FetchType.EAGER)
+    @NonNull
     private Boards board;
 
-    public Group(String title, Boards board) {
-        this.name = title;
-        this.board = board;
-    }
-
-    public Group() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public Group(String name, Boards board) {
         this.name = name;
-    }
-
-    public Boards getBoard() {
-        return board;
-    }
-
-    public void setBoard(Boards board) {
         this.board = board;
     }
 }

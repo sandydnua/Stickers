@@ -1,9 +1,14 @@
 package stickers.database.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "accaunts_in_groups")
+@Getter
+@Setter
+@NoArgsConstructor
 public class AccauntsInGroups {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -11,41 +16,16 @@ public class AccauntsInGroups {
 
     @JoinColumn(name = "accaunt")
     @ManyToOne(fetch = FetchType.EAGER)
+    @NonNull
     private Accaunt accaunt;
 
     @JoinColumn(name = "groupT")
+    @NonNull
     @ManyToOne(fetch = FetchType.EAGER)
     private Group group;
 
     public AccauntsInGroups(Accaunt accaunt, Group group) {
         this.accaunt = accaunt;
-        this.group = group;
-    }
-
-    public AccauntsInGroups() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Accaunt getAccaunt() {
-        return accaunt;
-    }
-
-    public void setAccaunt(Accaunt accaunt) {
-        this.accaunt = accaunt;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
         this.group = group;
     }
 }

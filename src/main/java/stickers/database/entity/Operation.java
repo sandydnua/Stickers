@@ -1,9 +1,14 @@
 package stickers.database.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "operations")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Operation {
 
     @Id
@@ -11,28 +16,10 @@ public class Operation {
     private int id;
 
     @Column(name = "name")
+    @NonNull
     private String name;
 
     public Operation(String name) {
-        this.name = name;
-    }
-
-    public Operation() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
 }

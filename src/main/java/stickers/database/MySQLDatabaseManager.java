@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -42,11 +43,16 @@ public class MySQLDatabaseManager implements DatabaseManager {
     public  List<String> executeQuery(String query) {
         return template.query(query, new RowMapper<String>() {
             @Override
-            public String mapRow(ResultSet resultSet, int i) throws SQLException {
+            public String mapRow(ResultSet resultSet, int numRow) throws SQLException {
+                /*for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+
+                }*/
+                System.out.println("----");
                 return resultSet.getString("name");
             }
         });
     }
+
 
     @Override
     public  void updateQuery(String query) {

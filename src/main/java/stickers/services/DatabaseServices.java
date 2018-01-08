@@ -227,6 +227,7 @@ public class DatabaseServices implements DbServices {
         // тут я выбираю всю строку из перекрестной таблицы. и в одном из ее полей есть нужные мне члены. а надо было толко мемберов.. надо перстроить
         // так запрос, чтобы в итоге сразу был List<Accaunts>
         return accauntsInGroupsRepository.findAllByGroupId(groupId);
+//        databaseManager.executeQuery("SELECT a.id, a.firstname, a.lastname from accaunts_in_groups aig inner join accaunts a on a.id = aig.accaunt where aig.groupT =" + groupId);
     }
 
     @Override
@@ -274,7 +275,7 @@ public class DatabaseServices implements DbServices {
     @Transactional(readOnly = true)
     public Set<String> getAllAccessesToBoardForCurrentAccaunt(Integer requestedBoardId) {
         Set<String> resultSetOperations = new HashSet<>();
-
+        System.out.println("++++++++++++++++++");
         if (boardsRepository.findByIdAndCreator(requestedBoardId, activAccaunt) != null) {
             // запрошеная доска была создана этим аккаунтом         // значит ему доступны все операци
             for (Operation operation : operationRepository.findAll()) {
