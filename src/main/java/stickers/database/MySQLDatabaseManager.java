@@ -33,10 +33,8 @@ public class MySQLDatabaseManager implements DatabaseManager {
 
     private JdbcTemplate template;
 
-
     @Override
     public SessionFactory getSessionFactory() {
-
         return sessionFactory;
     }
 
@@ -44,15 +42,10 @@ public class MySQLDatabaseManager implements DatabaseManager {
         return template.query(query, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet resultSet, int numRow) throws SQLException {
-                /*for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-
-                }*/
-                System.out.println("----");
                 return resultSet.getString("name");
             }
         });
     }
-
 
     @Override
     public  void updateQuery(String query) {
@@ -96,5 +89,4 @@ public class MySQLDatabaseManager implements DatabaseManager {
             return false;
         }
     }
-
 }

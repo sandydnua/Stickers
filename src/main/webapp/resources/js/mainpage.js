@@ -51,13 +51,21 @@ function loadMembersGroup() {
     var groupId = $('#groupsSelect option:checked').attr('name');
     $.get("loadMembersGroup", {groupId : groupId}).done(function (data) {
         $('#membersGroup').empty();
-        // $('#membersGroupTmpl').tmpl(data).appendTo('#membersGroup');
-        // alert(JSON.stringify(data));
-        data.forEach(function (member) {
-            $('#membersGroup').append('<option name="' + member['accaunt']['id'] + '">' + member['accaunt']['firstName'] + " " + member['accaunt']['lastName'] + "</option>");
-        });
+        $('#membersGroupTmpl').tmpl(data).appendTo('#membersGroup');
     });
 }
+function deleteAllMembersFromSelectedGroup() {
+    var groupId = $('#groupsSelect option:checked').attr('name');
+    $.post("deleteAllMembersFromGroup", {groupId : groupId}).done(function (data) {
+        $('#membersGroup').empty();
+    });
+}
+
+function deleteMemberFromSelectedGroup(memberIdInGroup) {
+    $.post("deleteMemberFromGroup", {memberIdInGroup : memberIdInGroup}).done(function (data) {
+        $('#member_' + memberIdInGroup).empty();
+    });
+};
 function saveMembersGroup() {
     var groupId = $('#groupsSelect option:checked').attr('name');
 
@@ -78,24 +86,16 @@ function deleteMembersGroup() {
         $(element).remove();
     });
 }
-function addUser() {
+function addUserInSelectedGroup() {
 
-    $("#users option:checked").each(function (index, item) {
-        var name = $(item).val();
-        var id = $(item).attr('name');
-        if ( id != null && name != null) {
-            if ($('#membersGroup [name=' + id + ']').length == 0) {
-                $('#membersGroup').append('<option name="' + id + '">' + name + "</option>");
-            } else {
-                alert("Такой уже есть: " + $('#membersGroup [name=' + id + ']').length);
-            }
-        } else {
-            //TODO
-            alert("Error addUser");
-        }
-    });
-
-}
+        // TODO надо атрибусты name переделать...
+    //TODO надо сделать проверку на наличие этого юзера уже в группе
+        var groupId = $('#groupsSelect option:checked').attr('name');
+        var userId = $("#users option:checked").attr('name');
+        $.post("addUserInSelectedGroup", {userId : userId, groupId : groupId}).done(function () {
+            loadMembersGroup();
+        });
+};
 
 function changeGroup() {
     var groupId = $('#groupsSelect option:checked').attr('name');
@@ -113,9 +113,9 @@ function changeGroup() {
             for (var i = 0; i < data.length; i++) {
                 if (operations.indexOf(data[i]['name']) != -1) {
                     // есть в данной группе операция data[i]['name']
-                    $('#operationsCheckBox').append('<label><input type="checkbox" checked name="operation_' + data[i]['id'] + '" value="' + data[i]['id'] + '"/>' + data[i]["name"] + '</label><br>');
+                    $('#operationsCheckBox').append('<label><input onchange="setOperationStatusForCurrentGroup(\'' + data[i]['id'] + '\')" type="checkbox" checked name="operation_' + data[i]['id'] + '" value="' + data[i]['id'] + '"/>' + data[i]["name"] + '</label><br>');
                 } else {
-                    $('#operationsCheckBox').append('<label><input type="checkbox" name="operation_' + data[i]['id'] + '" value="' + data[i]['id'] + '"/>' + data[i]["name"] + '</label><br>');
+                    $('#operationsCheckBox').append('<label><input onchange="setOperationStatusForCurrentGroup(\'' + data[i]['id'] + '\')" type="checkbox" name="operation_' + data[i]['id'] + '" value="' + data[i]['id'] + '"/>' + data[i]["name"] + '</label><br>');
                 }
             }
         });
@@ -124,20 +124,15 @@ function changeGroup() {
     loadMembersGroup();
 
 }
-function saveOperationsForGroup() {
+function setOperationStatusForCurrentGroup(operationId) {
     var groupId = $('#groupsSelect option:checked').attr('name');
+    var checked = $('input[name="operation_' + operationId + '"]').is(":checked");
 
-    var operationsId = new Array();
-    $('input[name^="operation_"]:checked').each(function (index, element) {
-        operationsId[index] = $(element).val();
-    });
-
-    $.post( 'saveOperationsForGroup',
-        {groupId : groupId, operationsId:operationsId}
-    ).done(function () {
+    $.post("setOperationStatus", {groupId : groupId, operationId : operationId, checked : checked}).done(function () {
         changeGroup();
     });
 }
+
 function saveTitleBoard(eventObject) {
     $.post('saveTitleBoard',{boardId : eventObject.data.id, newTitle : $("#editTitleBoard").val()}).done(function () {
         editBoard(eventObject.data.id);

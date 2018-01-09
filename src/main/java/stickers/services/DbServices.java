@@ -1,5 +1,6 @@
 package stickers.services;
 
+import stickers.database.MemberOfGroup;
 import stickers.database.entity.*;
 
 import java.util.List;
@@ -61,15 +62,22 @@ public interface DbServices {
 
     void saveTitleBoard(int boardId, String newTitle);
 
-    void saveMembersGroup(int groupId, int[] membersId);
 
     List<Accaunt> getAllAccaunts(); // на будущее надо от него избавиться
 
-    List<AccauntsInGroups> getMembersGroup(int groupId);
+    List<MemberOfGroup> getMembersGroup(int groupId);
 
-    void saveOperationsForGroup(int groupId, int[] operationsId);
+//    void saveOperationsForGroup(int groupId, int[] operationsId);
 
     void deleteSticker(int stickerId);
 
     boolean canCurrentUserDeleteStickerFromBoard(int boardId);
+
+    void deleteMemberFromGroup(int memberId);
+
+    void deleteAllMembersFromGroup(int groupId);
+
+    void addUserInGroup(int groupId, int userId);
+
+    void setOperationStatus(int groupId, int operationId, boolean checked);
 }

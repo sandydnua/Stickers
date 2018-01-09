@@ -4,6 +4,15 @@
     <script src="<c:url value="/resources/js/jquery.js" />"></script>
     <script src="<c:url value="/resources/js/jquery.tmpl.js" />"></script>
     <script src="<c:url value="/resources/js/mainpage.js" />"></script>
+    <style type="text/css">
+        .memberOfGroup {
+            color: white;
+            padding: 8px;
+            font-family: Arial;
+            background-color:  #4CAF50;
+            border-spacing: 5px;
+        }
+    </style>
     <script type="text/javascript">
         $(window).on("load", function(){
             // TODO тут полно костылей !!!
@@ -37,6 +46,7 @@
             }
         });
     </script>
+
 
     <script id="boardsTmpl" type="text/x-jquery-tmpl">
          <table border="1" id="boardsTable">
@@ -101,9 +111,13 @@
         {%/each%}
     </script>
     <script id="membersGroupTmpl" type="text/x-jquery-tmpl">
-        {%each $data%}
-             -<label>{%= $value.id %}</label><br>
-        {%/each%}
+        <div id="member_{%= $data.id %}">
+            <span class="memberOfGroup">
+                {%= $data.id %} {%= $data.firstName %} {%= $data.lastName %}
+            </span>
+            <img src="<c:url value="/resources/img/deleteMember.png" />" onClick='deleteMemberFromSelectedGroup("{%= $data.id %}")'>
+        </div>
+        <br>
     </script>
 <head>
     <title>Main</title>
@@ -137,20 +151,18 @@
             Доступы:<br>
             <label><input onchange="changeExposedBoard()" id="exposedBoard" type="checkbox"/>Открыт для всех по сслыке</label><br>
             Выбери группу:<select size="5" id="groupsSelect" onchange="changeGroup()" ></select>
+            <br>
             <button onclick="deleteGroup()">Удалить выбранную</button>
+            <br>
+            <button onclick="deleteAllMembersFromSelectedGroup()">Очистить выбранную</button>
             <br>
             <input id="newGroup" type="text"><button onclick="addGroup()">Добавить группу</button><br>
             Операции для выбранной группы:
             <div id="operationsCheckBox"></div>
-            <button onclick="saveOperationsForGroup()">Сохранить операции</button><br>
-            Члены группы:
-            <br><select multiple size="10" id="membersGroup"></select>
-            <%--<br><div id="membersGroup"></div>--%>
-            <button onclick="addUser()"> << </button>
-            <select multiple size="10" id="users"></select>
+            <div>Члены группы:</div>
+            <br><div id="membersGroup"></div>
             <br>
-            <button onclick="deleteMembersGroup()">Удалить выбранных</button><br>
-            <button onclick="saveMembersGroup()">Сохранить членов</button><br>
+            <select size="10" id="users" ondblclick="addUserInSelectedGroup()"></select>
 
         </div>
     </div>

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import stickers.database.MemberOfGroup;
 import stickers.database.entity.*;
 import stickers.services.DbServices;
 
@@ -82,16 +83,6 @@ public class RestService {
         dbServices.unsetExposedBoard(boardId);
     }
 
-    @PostMapping("saveOperationsForGroup")
-    public void saveOperationsForGroup(@RequestParam(name = "operationsId[]", required = false) int[] operationsId,
-                                       @RequestParam(name = "groupId") int groupId){
-        dbServices.saveOperationsForGroup(groupId, operationsId);
-    }
-    @PostMapping("saveMembersGroup")
-    public void saveMembersGroup(@RequestParam(name = "membersId[]", required = false) int[] membersId,
-                                       @RequestParam(name = "groupId") int groupId){
-        dbServices.saveMembersGroup(groupId, membersId);
-    }
     @PostMapping("saveTitleBoard")
     public void saveTitleBoard(@RequestParam(name = "boardId") int boardId,
                                @RequestParam(name = "newTitle") String newTitle) {
@@ -109,7 +100,7 @@ public class RestService {
         return dbServices.getAllAccaunts();
     }
     @GetMapping("loadMembersGroup")
-    public List<AccauntsInGroups> loadMembersGroup(@RequestParam(name = "groupId") int groupId) {
+    public List<MemberOfGroup> loadMembersGroup(@RequestParam(name = "groupId") int groupId) {
 
         return dbServices.getMembersGroup(groupId);
     }
@@ -121,6 +112,26 @@ public class RestService {
     @PostMapping("deleteSticker")
     public void deleteSticker(@RequestParam(name = "stickerId") int stickerId) {
          dbServices.deleteSticker(stickerId);
+    }
+
+    @PostMapping("deleteMemberFromGroup")
+    public void deleteMemberFromGroup(@RequestParam(name = "memberIdInGroup") int memberIdInGroup){
+        dbServices.deleteMemberFromGroup(memberIdInGroup);
+    }
+    @PostMapping("deleteAllMembersFromGroup")
+    public void deleteAllMembersFromGroup(@RequestParam(name = "groupId") int groupId){
+        dbServices.deleteAllMembersFromGroup(groupId);
+    }
+    @PostMapping("addUserInSelectedGroup")
+    public void addUserInSelectedGroup(@RequestParam(name = "groupId") int groupId,
+                                       @RequestParam(name = "userId") int userId){
+        dbServices.addUserInGroup(groupId, userId);
+    }
+    @PostMapping("setOperationStatus")
+    public void setOperationStatus(@RequestParam(name = "groupId") int groupId,
+                                   @RequestParam(name = "operationId") int operationId,
+                                   @RequestParam(name = "checked") boolean checked){
+        dbServices.setOperationStatus(groupId, operationId, checked);
     }
 
 }

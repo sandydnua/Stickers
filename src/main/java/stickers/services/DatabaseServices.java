@@ -1,11 +1,16 @@
 package stickers.services;
 
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import stickers.database.DatabaseManager;
+import stickers.database.MemberOfGroup;
 import stickers.database.entity.*;
 import stickers.database.repositoryes.*;
 import stickers.exceptions.DatabaseManagerExeption;
@@ -199,56 +204,27 @@ public class DatabaseServices implements DbServices {
     }
 
     @Override
-    @Transactional(readOnly = false)
-    public void saveMembersGroup(int groupId, int[] membersId) {
-         // TODO надо оптимизировать, слишком много обращений к базе из-за хибернейта
-        Group group = groupRepository.findOne(groupId);
-        if (isCurentUserCreatorBoard(group.getBoard().getId())) {
-            accauntsInGroupsRepository.deleteByGroup_Id(groupId);
-            if (null != membersId) {
-                List<AccauntsInGroups> rows = new ArrayList<>();
-                for (int id : membersId) {
-                    if (accauntsInGroupsRepository.findByGroup_IdAndAccaunt_Id(groupId, id) == null) {
-                        rows.add(new AccauntsInGroups(accauntRepository.findOne(id), group));
-                    }
-                }
-                accauntsInGroupsRepository.save(rows);
-            }
-        }
-    }
-
-    @Override
     public List<Accaunt> getAllAccaunts() {// на будущее надо от него избавиться
         return (List<Accaunt>) accauntRepository.findAll();
     }
 
     @Override
-    public List<AccauntsInGroups> getMembersGroup(int groupId) {
+    public List<MemberOfGroup> getMembersGroup(int groupId) {
         // тут я выбираю всю строку из перекрестной таблицы. и в одном из ее полей есть нужные мне члены. а надо было толко мемберов.. надо перстроить
         // так запрос, чтобы в итоге сразу был List<Accaunts>
-        return accauntsInGroupsRepository.findAllByGroupId(groupId);
-//        databaseManager.executeQuery("SELECT a.id, a.firstname, a.lastname from accaunts_in_groups aig inner join accaunts a on a.id = aig.accaunt where aig.groupT =" + groupId);
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public void saveOperationsForGroup(int groupId, int[] operationsId) {
-        // TODO
-        // этот метод похож на saveMembersGroup - может как-то сделать универсально... надо подумать
-        Group group = groupRepository.findOne(groupId);
-        if (isCurentUserCreatorBoard(group.getBoard().getId())) {
-            operationsForGroupsRepository.deleteByGroup_Id(groupId);
-            if ( null != operationsId) {
-                List<OperationsForGroups> rows = new ArrayList<>();
-
-                for (int id : operationsId) {
-                    if ( operationsForGroupsRepository.findByGroup_IdAndOperation_Id(groupId, id) == null ) {
-                        rows.add(new OperationsForGroups(groupRepository.findOne(groupId), operationRepository.findOne(id)));
-                    }
-                }
-                operationsForGroupsRepository.save(rows);
-            }
+        Session session = databaseManager.getSession();
+        String sql = "SELECT aig.id, a.firstname, a.lastname from accaunts_in_groups aig inner join accaunts a on a.id = aig.accaunt where aig.groupT = :groupId";
+        Query query =  session.createSQLQuery(sql).setParameter("groupId", groupId);
+        List ls = query.list();
+        List<MemberOfGroup> members = new ArrayList();
+        for(Object member: ls){
+            members.add(new MemberOfGroup(
+                                            (int)((Object[])member)[0],
+                                            (String)((Object[])member)[1],
+                                            (String)((Object[])member)[2]
+                                            ));
         }
+        return members;
     }
 
     @Override
@@ -275,7 +251,6 @@ public class DatabaseServices implements DbServices {
     @Transactional(readOnly = true)
     public Set<String> getAllAccessesToBoardForCurrentAccaunt(Integer requestedBoardId) {
         Set<String> resultSetOperations = new HashSet<>();
-        System.out.println("++++++++++++++++++");
         if (boardsRepository.findByIdAndCreator(requestedBoardId, activAccaunt) != null) {
             // запрошеная доска была создана этим аккаунтом         // значит ему доступны все операци
             for (Operation operation : operationRepository.findAll()) {
@@ -329,5 +304,42 @@ public class DatabaseServices implements DbServices {
     public boolean canCurrentUserDeleteStickerFromBoard(int boardId) {
         Set<String> accesses = getAllAccessesToBoardForCurrentAccaunt(boardId);
         return ( null != accesses && accesses.contains("delete"));
+    }
+
+    @Override
+    public void deleteMemberFromGroup(int memberInGroupId) {
+        accauntsInGroupsRepository.delete(memberInGroupId);
+    }
+
+    @Override
+    // TODO почему не работает без аннотации транзакзшн ??
+    @Transactional(readOnly = false)
+    public void deleteAllMembersFromGroup(int groupId) {
+        accauntsInGroupsRepository.deleteByGroup_Id(groupId);
+    }
+
+    @Override
+    public void addUserInGroup(int groupId, int userId) {
+        Accaunt accaunt = accauntRepository.findOne(userId);
+        Group group = groupRepository.findOne(groupId);
+
+        if (isCurentUserCreatorBoard(group.getBoard().getId()) && null != accaunt) {
+            accauntsInGroupsRepository.save(new AccauntsInGroups(accaunt, group));
+        }
+    }
+
+    @Override
+    @Transactional
+    public void setOperationStatus(int groupId, int operationId, boolean checked) {
+        Group group = groupRepository.findOne(groupId);
+        Operation operation = operationRepository.findOne(operationId);
+        if (isCurentUserCreatorBoard(group.getBoard().getId()) && null != operation) {
+            if (checked) {
+                // TODO надо чтобы с jsp приходил id записи в перекрестной таблице - и удаление делать по этому id
+                operationsForGroupsRepository.save(new OperationsForGroups(group, operation));
+            } else {
+                operationsForGroupsRepository.deleteByGroupAndOperation(group, operation);
+            }
+        }
     }
 }

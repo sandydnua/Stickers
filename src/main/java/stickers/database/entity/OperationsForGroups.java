@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "operations_for_groups")
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class OperationsForGroups {
     @Id
