@@ -54,7 +54,7 @@
     <properties>
         <junit.version>4.12</junit.version>
         <mockito.version>1.10.19</mockito.version>
-        <org.springframework.version>4.3.11.RELEASE</org.springframework.version>
+        <org.springframework.version>5.2.5.RELEASE</org.springframework.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
